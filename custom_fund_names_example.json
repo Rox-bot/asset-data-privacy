@@ -1,0 +1,26 @@
+{
+  "master_fund_names": [
+    "BlackRock Global Fund",
+    "Vanguard Growth Fund",
+    "Fidelity Contrafund",
+    "T. Rowe Price Blue Chip Growth",
+    "American Funds Growth Fund",
+    "PIMCO Total Return Fund",
+    "Templeton Global Bond Fund",
+    "Janus Henderson Global Technology",
+    "Franklin Templeton Global Bond",
+    "Invesco QQQ Trust"
+  ],
+  "placeholder_mapping": {
+    "BlackRock Global Fund": "Fund001",
+    "Vanguard Growth Fund": "Fund002",
+    "Fidelity Contrafund": "Fund003",
+    "T. Rowe Price Blue Chip Growth": "Fund004",
+    "American Funds Growth Fund": "Fund005",
+    "PIMCO Total Return Fund": "Fund006",
+    "Templeton Global Bond Fund": "Fund007",
+    "Janus Henderson Global Technology": "Fund008",
+    "Franklin Templeton Global Bond": "Fund009",
+    "Invesco QQQ Trust": "Fund010"
+  }
+}

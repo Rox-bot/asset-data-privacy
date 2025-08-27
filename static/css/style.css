@@ -1,0 +1,300 @@
+/* Custom Styles for Asset Data Privacy Frontend */
+
+:root {
+    --primary-color: #1a2332;
+    --secondary-color: #2d3748;
+    --accent-color: #f6ad55;
+    --success-color: #38a169;
+    --info-color: #3182ce;
+    --warning-color: #ed8936;
+    --danger-color: #e53e3e;
+    --light-bg: #f7fafc;
+    --border-color: #e2e8f0;
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: none;
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-lg {
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+/* File Upload */
+.form-control {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(26, 35, 50, 0.25);
+}
+
+/* Progress Bar */
+.progress {
+    border-radius: 8px;
+    height: 8px;
+}
+
+.progress-bar {
+    border-radius: 8px;
+}
+
+/* Tables */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--light-bg);
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(26, 35, 50, 0.05);
+}
+
+/* Tabs */
+.nav-tabs {
+    border-bottom: 2px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 8px 8px 0 0;
+    color: var(--secondary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    background-color: rgba(26, 35, 50, 0.05);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Content Areas */
+.border.rounded {
+    border-color: var(--border-color) !important;
+    background-color: white;
+}
+
+/* Statistics */
+.h4 {
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.text-primary { color: var(--primary-color) !important; }
+.text-info { color: var(--info-color) !important; }
+.text-success { color: var(--success-color) !important; }
+.text-warning { color: var(--warning-color) !important; }
+
+/* Fund Names List */
+.fund-name-item {
+    background-color: var(--light-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.fund-name-item:hover {
+    background-color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.fund-name-item .fund-name {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.fund-name-item .placeholder {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.fund-name-item .remove-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.fund-name-item .remove-btn:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0 15px;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    .position-fixed {
+        position: relative !important;
+        margin: 20px 0 !important;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Copy Button States */
+.copy-btn {
+    transition: all 0.3s ease;
+}
+
+.copy-btn.copied {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+/* OpenAI Results */
+.openai-content {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.openai-content h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.openai-content p {
+    line-height: 1.6;
+    color: var(--secondary-color);
+}
+
+/* Decryption Button */
+#decryptBtn {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: white;
+    box-shadow: 0 4px 20px rgba(237, 137, 54, 0.3);
+}
+
+#decryptBtn:hover {
+    background-color: #d97706;
+    border-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(237, 137, 54, 0.4);
+}
+
+/* Success Messages */
+.alert-success {
+    background-color: rgba(56, 161, 105, 0.1);
+    border-color: var(--success-color);
+    color: var(--success-color);
+    border-radius: 8px;
+}
+
+/* Error Messages */
+.alert-danger {
+    background-color: rgba(229, 62, 62, 0.1);
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    border-radius: 8px;
+}
+
+/* Info Messages */
+.alert-info {
+    background-color: rgba(49, 130, 206, 0.1);
+    border-color: var(--info-color);
+    color: var(--info-color);
+    border-radius: 8px;
+}

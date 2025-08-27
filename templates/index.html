@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Data Privacy - Financial Document Protection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                Asset Data Privacy
+            </a>
+            <span class="navbar-text">
+                Secure Financial Document Processing
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left Panel - Upload and Configuration -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-upload me-2"></i>
+                            Document Upload
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label for="pdfFile" class="form-label">Select PDF Document</label>
+                            <input type="file" class="form-control" id="pdfFile" name="file" accept=".pdf" required>
+                            <div class="form-text">Maximum file size: 16MB</div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary w-100" id="uploadBtn" disabled>
+                            <i class="fas fa-cloud-upload-alt me-2"></i>
+                            Process Document
+                        </button>
+                        
+                        <div class="mt-3" id="uploadProgress" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <small class="text-muted">Processing document...</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fund Names Management -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-building me-2"></i>
+                            Fund Names Management
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="newFundName" 
+                                       placeholder="Enter fund name">
+                                <button class="btn btn-outline-info" type="button" id="addFundBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="fundNamesList">
+                            <!-- Fund names will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OpenAI Configuration -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-robot me-2"></i>
+                            OpenAI Integration
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="openaiPrompt" class="form-label">Analysis Prompt</label>
+                            <textarea class="form-control" id="openaiPrompt" rows="3" 
+                                      placeholder="Enter your analysis prompt here...">Extract all investment portfolio data and present it in a structured table format with asset names in the first column and all available details in subsequent columns.</textarea>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <small id="openaiStatus" class="text-warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                OpenAI API Key Required
+                            </small>
+                        </div>
+                        
+                        <button type="button" class="btn btn-success w-100" id="openaiBtn" disabled>
+                            <i class="fas fa-brain me-2"></i>
+                            Analyze with AI
+                        </button>
+                        
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Set OPENAI_API_KEY in .env file
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Results and Tables -->
+            <div class="col-lg-8">
+                <!-- Processing Results -->
+                <div class="card shadow-sm" id="resultsCard" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Processing Results
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Summary Statistics -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h4 text-primary" id="totalMasked">0</div>
+                                    <small class="text-muted">Masked Values</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h4 text-info" id="totalFunds">0</div>
+                                    <small class="text-muted">Obfuscated Funds</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h4 text-success" id="totalChars">0</div>
+                                    <small class="text-muted">Characters</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="h4 text-warning" id="totalPages">0</div>
+                                    <small class="text-muted">Pages</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="masked-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#masked" type="button" role="tab">
+                                    <i class="fas fa-eye-slash me-2"></i>Masked Document
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="original-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#original" type="button" role="tab">
+                                    <i class="fas fa-eye me-2"></i>Original Document
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="details-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#details" type="button" role="tab">
+                                    <i class="fas fa-info-circle me-2"></i>Processing Details
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content mt-3" id="resultsTabContent">
+                            <!-- Masked Document Tab -->
+                            <div class="tab-pane fade show active" id="masked" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Masked Document (AI-Ready)</h6>
+                                    <button class="btn btn-sm btn-outline-primary" id="copyMaskedBtn">
+                                        <i class="fas fa-copy me-1"></i>Copy
+                                    </button>
+                                </div>
+                                <div class="border rounded p-3 bg-light" id="maskedContent" style="max-height: 400px; overflow-y: auto;">
+                                    <!-- Masked content will be displayed here -->
+                                </div>
+                            </div>
+
+                            <!-- Original Document Tab -->
+                            <div class="tab-pane fade" id="original" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Original Document</h6>
+                                    <button class="btn btn-sm btn-outline-primary" id="copyOriginalBtn">
+                                        <i class="fas fa-copy me-1"></i>Copy
+                                    </button>
+                                </div>
+                                <div class="border rounded p-3 bg-light" id="originalContent" style="max-height: 400px; overflow-y: auto;">
+                                    <!-- Original content will be displayed here -->
+                                </div>
+                            </div>
+
+                            <!-- Processing Details Tab -->
+                            <div class="tab-pane fade" id="details" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Processing Information</h6>
+                                    <button class="btn btn-sm btn-outline-secondary" id="downloadInfoBtn">
+                                        <i class="fas fa-download me-1"></i>Download JSON
+                                    </button>
+                                </div>
+                                
+                                <!-- Masked Values Table -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary">Masked Numerical Values</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Original Value</th>
+                                                    <th>Masked Value</th>
+                                                    <th>Position</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="maskedValuesTable">
+                                                <!-- Masked values will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Obfuscated Funds Table -->
+                                <div class="mb-4">
+                                    <h6 class="text-info">Obfuscated Fund Names</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Original Name</th>
+                                                    <th>Placeholder</th>
+                                                    <th>Position</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="obfuscatedFundsTable">
+                                                <!-- Obfuscated funds will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OpenAI Analysis Results -->
+                <div class="card shadow-sm mt-3" id="openaiResultsCard" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-brain me-2"></i>
+                            AI Analysis Results
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="openaiContent">
+                            <!-- AI analysis will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decryption Results -->
+                <div class="card shadow-sm mt-3" id="decryptionCard" style="display: none;">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-unlock me-2"></i>
+                            Decryption Results
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6>Decrypted Document</h6>
+                            <button class="btn btn-sm btn-outline-primary" id="copyDecryptedBtn">
+                                <i class="fas fa-copy me-1"></i>Copy
+                            </button>
+                        </div>
+                        <div class="border rounded p-3 bg-light" id="decryptedContent" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Decrypted content will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decrypt Button (Fixed Position) -->
+    <div class="position-fixed bottom-0 end-0 m-4" id="decryptButtonContainer" style="display: none;">
+        <button class="btn btn-warning btn-lg shadow" id="decryptBtn">
+            <i class="fas fa-unlock me-2"></i>
+            Decrypt Results
+        </button>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5>Processing Document</h5>
+                    <p class="text-muted">Please wait while we secure your financial data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

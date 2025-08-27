@@ -1,0 +1,6 @@
+{
+  "fund_names_file": "custom_fund_names.json",
+  "output_directory": "output",
+  "save_intermediate_files": true,
+  "log_level": "INFO"
+}
