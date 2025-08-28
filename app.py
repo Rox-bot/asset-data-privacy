@@ -168,50 +168,150 @@ def openai_process():
         full_prompt = f"""
 {prompt}
 
-**ASSET-LEVEL DATA EXTRACTION:**
+## Objective
+Extract comprehensive asset-level investment data from PDF documents (such as investment reports, portfolio statements, fund documents, or financial statements) and organize into a standardized tabular format.
 
-Document Content:
-{masked_text}
+## Output Format Requirements
+- **Single table format** with each asset as a separate row
+- **Exact column headers** (maintain spelling and order):
+  1. Name
+  2. Invested Capital
+  3. Current Cost
+  4. Fair Market Value
+  5. Date of Investment
+  6. Gross IRR
+  7. Net IRR
+  8. Gross MOIC
+  9. Net MOIC
+  10. EBITDA
+  11. Net Debt
+  12. Total Debt
+  13. City
+  14. State
+  15. Country
+  16. Continent
+  17. Business Description
+  18. GICS Sector
 
-**REQUIRED ASSET DATA FIELDS:**
-Extract the following information for each asset mentioned in the document:
+## Data Extraction Guidelines
 
-1. **Name** - Asset/Company name
-2. **Invested Capital** - Initial investment amount
-3. **Current Cost** - Current cost basis
-4. **Fair Market Value** - Current fair market value
-5. **Date of Investment** - When the investment was made
-6. **Gross IRR** - Gross internal rate of return
-7. **Net IRR** - Net internal rate of return
-8. **Gross MOIC** - Gross multiple on invested capital
-9. **Net MOIC** - Net multiple on invested capital
-10. **EBITDA** - Earnings before interest, taxes, depreciation, and amortization
-11. **Net Debt** - Net debt amount
-12. **Total Debt** - Total debt amount
-13. **City** - City location
-14. **State** - State/Province location
-15. **Country** - Country location
-16. **Continent** - Continent location
-17. **Business Description** - Description of the business
-18. **GICS Sector** - GICS sector classification with description
+### 1. Asset Identification
+- Each investment, holding, portfolio company, or asset mentioned should be a separate row
+- Include all types of investments: equity, debt, real estate, funds, securities, etc.
+- Do NOT aggregate or combine multiple assets into single rows
 
-**REQUIRED OUTPUT FORMAT:**
+### 2. Field-Specific Instructions
 
-**ASSET DATA TABLE:**
+#### **Name**
+- Use the most complete company/asset name available
+- Include legal entity suffixes (LLC, Inc., Ltd., etc.) if present
+- If multiple names exist, use the primary/most formal version
+- Examples: "ABC Manufacturing LLC", "XYZ Technology Inc."
+
+#### **Financial Metrics** (Invested Capital, Current Cost, Fair Market Value)
+- Extract exact numerical values with currency if specified
+- Look for terms like: "Investment Cost", "Book Value", "Market Value", "NAV", "Valuation"
+- Include currency symbol/code (USD, EUR, GBP, etc.)
+- Format: "$10,500,000" or "€5.2M" or "10.5 (millions)"
+
+#### **Date of Investment**
+- Look for: "Investment Date", "Acquisition Date", "Initial Investment", "Purchase Date"
+- Format as MM/DD/YYYY, DD/MM/YYYY, or YYYY-MM-DD based on source format
+- If only year/quarter available, use that format
+
+#### **Performance Metrics** (IRR and MOIC)
+- **IRR**: Look for "Internal Rate of Return", "IRR", percentage returns
+- **MOIC**: Look for "Multiple of Invested Capital", "Money Multiple", "Cash Multiple"
+- Specify Gross vs Net when clearly indicated
+- Format IRR as percentages: "15.2%" or "0.152"
+- Format MOIC as multiples: "2.3x" or "2.30"
+
+#### **Financial Position** (EBITDA, Debt)
+- **EBITDA**: "Earnings Before Interest, Tax, Depreciation, Amortization"
+- **Net Debt**: Total debt minus cash/cash equivalents
+- **Total Debt**: All interest-bearing obligations
+- Include trailing twelve months (TTM) or latest available period
+
+#### **Location Fields**
+- **City**: Headquarters or primary operating location
+- **State/Province**: Include for US, Canada, Australia, etc.
+- **Country**: Full country name (not abbreviations)
+- **Continent**: North America, South America, Europe, Asia, Africa, Oceania
+- Research/infer continent from country if not explicitly stated
+
+#### **Business Description**
+- Extract complete business descriptions, operations summary, or industry focus
+- Include key products/services, market position, business model
+- Maximum 2-3 sentences, maintain original language when possible
+
+#### **GICS Sector**
+- Look for Global Industry Classification Standard sectors
+- Common sectors: Technology, Healthcare, Financials, Consumer Discretionary, etc.
+- If not explicitly stated, leave blank (do not infer)
+
+### 3. Data Quality Standards
+
+#### **Missing Data Protocol**
+- Use **blank cells** (not "N/A", "NULL", or "-") for missing information
+- Do not estimate or calculate missing values
+- Do not combine related fields to fill missing data
+
+#### **Data Consistency**
+- Maintain consistent formatting within each column
+- Preserve original units and currency notations
+- Use consistent date formats throughout
+
+#### **Validation Rules**
+- Each asset must have at minimum a Name
+- Financial figures should maintain original precision
+- Dates should be chronologically reasonable
+- Location data should be geographically accurate
+
+## Special Extraction Scenarios
+
+### Portfolio Summary Tables
+- Extract individual assets, not portfolio totals
+- Skip aggregate rows, subtotals, or summary statistics
+
+### Multi-Page Documents
+- Scan entire document for asset information
+- Assets may be split across multiple sections/pages
+- Check appendices, footnotes, and detailed schedules
+
+### Different Document Types
+- **Fund Reports**: Focus on underlying investments
+- **Financial Statements**: Look for investment schedules, fair value tables
+- **Pitch Books**: Extract portfolio company details
+- **Quarterly Reports**: Prioritize most recent asset values
+
+### Currency and Units
+- Preserve original currency designations
+- Note if figures are in thousands/millions (maintain original notation)
+- Include any footnotes about currency conversion dates
+
+## Quality Assurance Checklist
+
+Before finalizing the table, verify:
+- [ ] Each row represents a unique asset/investment
+- [ ] No duplicate entries for the same asset
+- [ ] All 18 columns are present with exact headers
+- [ ] Blank cells used for missing data (not placeholder text)
+- [ ] Financial figures include appropriate units/currency
+- [ ] Dates are in consistent format
+- [ ] Geographic data is accurate and complete where available
+- [ ] Business descriptions are concise but informative
+
+## Example Output Structure
+
 | Name | Invested Capital | Current Cost | Fair Market Value | Date of Investment | Gross IRR | Net IRR | Gross MOIC | Net MOIC | EBITDA | Net Debt | Total Debt | City | State | Country | Continent | Business Description | GICS Sector |
-|------|------------------|--------------|-------------------|-------------------|-----------|---------|-------------|----------|--------|----------|------------|------|-------|---------|-----------|---------------------|-------------|
-| [Asset1] | [$] | [$] | [$] | [Date] | [%] | [%] | [x] | [x] | [$] | [$] | [$] | [City] | [State] | [Country] | [Continent] | [Description] | [Sector] |
-| [Asset2] | [$] | [$] | [$] | [Date] | [%] | [%] | [x] | [x] | [$] | [$] | [$] | [City] | [State] | [Country] | [Continent] | [Description] | [Sector] |
+|------|-----------------|--------------|-------------------|-------------------|-----------|---------|------------|----------|---------|----------|------------|------|-------|---------|-----------|---------------------|-------------|
+| TechCorp Inc. | $50,000,000 | $52,000,000 | $75,000,000 | 03/15/2020 | 18.5% | 15.2% | 1.5x | 1.44x | $12,500,000 | $25,000,000 | $30,000,000 | Austin | Texas | United States | North America | Leading software solutions provider for enterprise customers | Information Technology |
+| MedDevice LLC | €25,000,000 | | €35,000,000 | 2019-Q2 | | 22.1% | | 1.4x | | | | Berlin | | Germany | Europe | Medical device manufacturer specializing in diagnostic equipment | Health Care |
 
-**IMPORTANT INSTRUCTIONS:**
-- Extract ONLY the 18 specified data fields for each asset
-- Present data in a SINGLE table with assets as rows
-- Use "N/A" or leave blank for missing data
-- Focus on asset-level information only
-- No additional commentary or analysis needed
-- Ensure all assets mentioned in the document are included
+Remember: Accuracy and completeness are paramount. When in doubt, leave fields blank rather than making assumptions.
 
-Please provide ONLY the asset data table with the exact format specified above.
+**Document Content to Analyze:**
+{masked_text}
 """
         
         # Call OpenAI API
@@ -219,7 +319,7 @@ Please provide ONLY the asset data table with the exact format specified above.
         response = client.chat.completions.create(
             model="gpt-4o",  # Upgraded to GPT-4o for 30K TPM limit
             messages=[
-                {"role": "system", "content": "You are a financial data extraction specialist. Your task is to extract specific asset-level data from financial documents and present it in a clean, single table format. Focus only on the 18 specified data fields for each asset. Provide no additional commentary or analysis - just the data table."},
+                {"role": "system", "content": "You are a senior financial data extraction specialist with expertise in portfolio analysis, corporate finance, and investment research. Your task is to extract comprehensive asset-level investment data from financial documents and present it in a standardized tabular format with exactly 18 columns. Follow the detailed extraction guidelines precisely, ensuring data quality and accuracy. Present only the data table with no additional commentary."},
                 {"role": "user", "content": full_prompt}
             ],
             max_tokens=4000,  # Increased for comprehensive analysis
