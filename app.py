@@ -168,147 +168,66 @@ def openai_process():
         full_prompt = f"""
 {prompt}
 
-## Objective
-Extract comprehensive asset-level investment data from PDF documents (such as investment reports, portfolio statements, fund documents, or financial statements) and organize into a standardized tabular format.
+# EXTRACT INVESTMENT DATA FROM PDF
 
-## Output Format Requirements
-- **Single table format** with each asset as a separate row
-- **Exact column headers** (maintain spelling and order):
-  1. Name
-  2. Invested Capital
-  3. Current Cost
-  4. Fair Market Value
-  5. Date of Investment
-  6. Gross IRR
-  7. Net IRR
-  8. Gross MOIC
-  9. Net MOIC
-  10. EBITDA
-  11. Net Debt
-  12. Total Debt
-  13. City
-  14. State
-  15. Country
-  16. Continent
-  17. Business Description
-  18. GICS Sector
+## The Story
+You work for an institutional investor who receives quarterly reports from private equity funds. These reports are PDFs that contain information about individual companies the fund has invested in. Your job is to read through these PDFs and create a clean spreadsheet with one row for each company investment.
 
-## Data Extraction Guidelines
+The challenge is that these PDFs are messy. Some information appears in tables (like "Schedule of Investments") and other information appears in text sections (like "Portfolio Company Updates" or company profiles). You need to read both parts and combine the information.
 
-### 1. Asset Identification
-- Each investment, holding, portfolio company, or asset mentioned should be a separate row
-- Include all types of investments: equity, debt, real estate, funds, securities, etc.
-- Do NOT aggregate or combine multiple assets into single rows
+## What You Need To Do
 
-### 2. Field-Specific Instructions
+**Step 1: Find the investment table**
+Look for tables with headers like:
+- "Schedule of Investments" 
+- "Company Name"
+- "Investment Data"
+- Column headers: "Total Invested", "Current Cost", "Reported Value", "Fair Value"
 
-#### **Name**
-- Use the most complete company/asset name available
-- Include legal entity suffixes (LLC, Inc., Ltd., etc.) if present
-- If multiple names exist, use the primary/most formal version
-- Examples: "ABC Manufacturing LLC", "XYZ Technology Inc."
+**Step 2: Find the company descriptions**
+Look for sections with titles like:
+- "Portfolio Company Update"
+- "Company Profile" 
+- Individual company pages
+- Look for business descriptions, locations, financial metrics
 
-#### **Financial Metrics** (Invested Capital, Current Cost, Fair Market Value)
-- Extract exact numerical values with currency if specified
-- Look for terms like: "Investment Cost", "Book Value", "Market Value", "NAV", "Valuation"
-- Include currency symbol/code (USD, EUR, GBP, etc.)
-- Format: "$10,500,000" or "€5.2M" or "10.5 (millions)"
-
-#### **Date of Investment**
-- Look for: "Investment Date", "Acquisition Date", "Initial Investment", "Purchase Date"
-- Format as MM/DD/YYYY, DD/MM/YYYY, or YYYY-MM-DD based on source format
-- If only year/quarter available, use that format
-
-#### **Performance Metrics** (IRR and MOIC)
-- **IRR**: Look for "Internal Rate of Return", "IRR", percentage returns
-- **MOIC**: Look for "Multiple of Invested Capital", "Money Multiple", "Cash Multiple"
-- Specify Gross vs Net when clearly indicated
-- Format IRR as percentages: "15.2%" or "0.152"
-- Format MOIC as multiples: "2.3x" or "2.30"
-
-#### **Financial Position** (EBITDA, Debt)
-- **EBITDA**: "Earnings Before Interest, Tax, Depreciation, Amortization"
-- **Net Debt**: Total debt minus cash/cash equivalents
-- **Total Debt**: All interest-bearing obligations
-- Include trailing twelve months (TTM) or latest available period
-
-#### **Location Fields**
-- **City**: Headquarters or primary operating location
-- **State/Province**: Include for US, Canada, Australia, etc.
-- **Country**: Full country name (not abbreviations)
-- **Continent**: North America, South America, Europe, Asia, Africa, Oceania
-- Research/infer continent from country if not explicitly stated
-
-#### **Business Description**
-- Extract complete business descriptions, operations summary, or industry focus
-- Include key products/services, market position, business model
-- Maximum 2-3 sentences, maintain original language when possible
-
-#### **GICS Sector**
-- Look for Global Industry Classification Standard sectors
-- Common sectors: Technology, Healthcare, Financials, Consumer Discretionary, etc.
-- If not explicitly stated, leave blank (do not infer)
-
-### 3. Data Quality Standards
-
-#### **Missing Data Protocol**
-- Use **blank cells** (not "N/A", "NULL", or "-") for missing information
-- Do not estimate or calculate missing values
-- Do not combine related fields to fill missing data
-
-#### **Data Consistency**
-- Maintain consistent formatting within each column
-- Preserve original units and currency notations
-- Use consistent date formats throughout
-
-#### **Validation Rules**
-- Each asset must have at minimum a Name
-- Financial figures should maintain original precision
-- Dates should be chronologically reasonable
-- Location data should be geographically accurate
-
-## Special Extraction Scenarios
-
-### Portfolio Summary Tables
-- Extract individual assets, not portfolio totals
-- Skip aggregate rows, subtotals, or summary statistics
-
-### Multi-Page Documents
-- Scan entire document for asset information
-- Assets may be split across multiple sections/pages
-- Check appendices, footnotes, and detailed schedules
-
-### Different Document Types
-- **Fund Reports**: Focus on underlying investments
-- **Financial Statements**: Look for investment schedules, fair value tables
-- **Pitch Books**: Extract portfolio company details
-- **Quarterly Reports**: Prioritize most recent asset values
-
-### Currency and Units
-- Preserve original currency designations
-- Note if figures are in thousands/millions (maintain original notation)
-- Include any footnotes about currency conversion dates
-
-## Quality Assurance Checklist
-
-Before finalizing the table, verify:
-- [ ] Each row represents a unique asset/investment
-- [ ] No duplicate entries for the same asset
-- [ ] All 18 columns are present with exact headers
-- [ ] Blank cells used for missing data (not placeholder text)
-- [ ] Financial figures include appropriate units/currency
-- [ ] Dates are in consistent format
-- [ ] Geographic data is accurate and complete where available
-- [ ] Business descriptions are concise but informative
-
-## Example Output Structure
+**Step 3: Create your output table**
+For each company, fill out these 18 columns:
 
 | Name | Invested Capital | Current Cost | Fair Market Value | Date of Investment | Gross IRR | Net IRR | Gross MOIC | Net MOIC | EBITDA | Net Debt | Total Debt | City | State | Country | Continent | Business Description | GICS Sector |
-|------|-----------------|--------------|-------------------|-------------------|-----------|---------|------------|----------|---------|----------|------------|------|-------|---------|-----------|---------------------|-------------|
-| TechCorp Inc. | $50,000,000 | $52,000,000 | $75,000,000 | 03/15/2020 | 18.5% | 15.2% | 1.5x | 1.44x | $12,500,000 | $25,000,000 | $30,000,000 | Austin | Texas | United States | North America | Leading software solutions provider for enterprise customers | Information Technology |
-| MedDevice LLC | €25,000,000 | | €35,000,000 | 2019-Q2 | | 22.1% | | 1.4x | | | | Berlin | | Germany | Europe | Medical device manufacturer specializing in diagnostic equipment | Health Care |
 
-Remember: Accuracy and completeness are paramount. When in doubt, leave fields blank rather than making assumptions.
+**Step 4: Rules for filling the table**
+- **Name**: Use the company name from the investment table
+- **Money fields** (Invested Capital, Current Cost, Fair Market Value, EBITDA, debts): Format as $X.XM (like $15.2M)
+- **Fair Market Value**: Use "Reported Value" or "Fair Value" from tables, NOT "Current Cost"
+- **Date**: Format as MM/DD/YYYY
+- **IRR**: Format as XX.X% (can be negative)
+- **MOIC**: Calculate as Fair Market Value divided by Invested Capital, format as X.XXx
+- **Location**: Look in company descriptions for headquarters or main office
+- **Business Description**: One sentence about what the company does
+- **GICS Sector**: Industry category (like "Health Care", "Technology", etc.)
+
+**Step 5: Handle duplicates**
+If you see the same company name multiple times (like debt and equity), combine them into ONE row:
+- Add up all the money amounts
+- Use the earliest investment date
+- Take the business description from whichever section has it
+
+**Step 6: Quality checks**
+- Current Cost should not be higher than Invested Capital
+- Net Debt should not be higher than Total Debt  
+- If a company appears in the investment table but you can't find its description section, leave those fields blank
+
+## Example
+If you see:
+- **In investment table**: "Company ABC, $10M invested, $12M fair value, 01/15/2020"
+- **In description section**: "Company ABC is a healthcare services company based in Boston, Massachusetts. EBITDA of $5M, total debt of $20M."
+
+Your output row should be:
+| Company ABC | $10.0M | $10.0M | $12.0M | 01/15/2020 | | | 1.20x | | $5.0M | | $20.0M | Boston | MA | United States | North America | Healthcare services company | Health Care |
+
+## Your Task
+Read through the entire PDF. Find all the investment tables and all the company description sections. Create one clean table with all companies and their complete information.
 
 **Document Content to Analyze:**
 {masked_text}
@@ -319,7 +238,7 @@ Remember: Accuracy and completeness are paramount. When in doubt, leave fields b
         response = client.chat.completions.create(
             model="gpt-4o",  # Upgraded to GPT-4o for 30K TPM limit
             messages=[
-                {"role": "system", "content": "You are a senior financial data extraction specialist with expertise in portfolio analysis, corporate finance, and investment research. Your task is to extract comprehensive asset-level investment data from financial documents and present it in a standardized tabular format with exactly 18 columns. Follow the detailed extraction guidelines precisely, ensuring data quality and accuracy. Present only the data table with no additional commentary."},
+                {"role": "system", "content": "You are an institutional investor's data analyst who specializes in extracting investment data from private equity fund reports. Your job is to read through messy PDFs, find investment tables and company descriptions, and create clean spreadsheets with one row per company. Follow the step-by-step extraction process precisely, combining information from multiple document sections to create comprehensive asset data tables."},
                 {"role": "user", "content": full_prompt}
             ],
             max_tokens=4000,  # Increased for comprehensive analysis
