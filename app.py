@@ -213,7 +213,7 @@ Please provide a thorough, professional analysis using the complete document con
         # Call OpenAI API
         client = openai.OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",  # Upgraded to GPT-4o for 30K TPM limit
             messages=[
                 {"role": "system", "content": "You are a senior financial analyst with expertise in portfolio management and risk analysis. Your task is to extract comprehensive investment portfolio data and present it in professional, structured tabular format. Analyze the entire document context to provide thorough insights."},
                 {"role": "user", "content": full_prompt}
