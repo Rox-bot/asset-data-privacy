@@ -168,30 +168,46 @@ def openai_process():
         full_prompt = f"""
 {prompt}
 
+**COMPREHENSIVE FINANCIAL DOCUMENT ANALYSIS:**
+
 Document Content:
 {masked_text}
 
-Please analyze this financial document and extract the data in the following format:
+**ANALYSIS REQUIREMENTS:**
+1. **Portfolio Overview**: Extract comprehensive asset allocation and fund composition
+2. **Performance Analysis**: Identify all performance metrics, returns, and benchmarks  
+3. **Risk Assessment**: Analyze risk measures, volatility, and correlation data
+4. **Strategic Insights**: Provide actionable insights based on the full document context
+5. **Data Completeness**: Ensure no significant information is overlooked
 
 **REQUIRED OUTPUT FORMAT:**
-Create a table with:
-- Column 1: Asset names (investment names, company names, fund names, etc.)
-- Column 2 onwards: All available details for each asset (values, percentages, performance metrics, allocation, etc.)
 
-**EXAMPLE TABLE STRUCTURE:**
-| Asset Name | Allocation | Value | Performance | Risk Level | Other Details |
-|------------|------------|-------|-------------|------------|---------------|
-| [Asset1]   | [%]       | [$]   | [%]         | [Level]    | [Details]     |
-| [Asset2]   | [%]       | [$]   | [%]         | [Level]    | [Details]     |
+**1. EXECUTIVE SUMMARY TABLE:**
+| Metric | Value | Details |
+|--------|-------|---------|
+| Total Portfolio Value | [Value] | [Context] |
+| Number of Assets | [Count] | [Breakdown] |
+| Risk Profile | [Level] | [Justification] |
 
-**IMPORTANT:**
-1. Extract ALL asset names mentioned in the document
-2. Include ALL available details for each asset
-3. Present the data in a clear, organized table format
-4. If certain details are missing for an asset, mark as "N/A" or leave blank
-5. Focus on creating a comprehensive, structured view of the investment portfolio
+**2. ASSET ALLOCATION TABLE:**
+| Asset/Fund Name | Allocation % | Current Value | Performance | Risk Level | Key Details |
+|-----------------|--------------|---------------|-------------|------------|-------------|
+| [Asset1] | [%] | [$] | [%] | [Level] | [Details] |
+| [Asset2] | [%] | [$] | [%] | [Level] | [Details] |
 
-Please provide the analysis in this exact tabular format.
+**3. PERFORMANCE ANALYSIS:**
+| Time Period | Portfolio Return | Benchmark | Outperformance | Key Drivers |
+|-------------|------------------|-----------|----------------|-------------|
+| [Period] | [%] | [%] | [%] | [Factors] |
+
+**IMPORTANT INSTRUCTIONS:**
+- Use the ENTIRE document context for comprehensive analysis
+- Extract ALL numerical values, percentages, and financial metrics
+- Provide professional-grade insights suitable for senior management
+- Ensure data accuracy and completeness across all sections
+- Present findings in clear, actionable format
+
+Please provide a thorough, professional analysis using the complete document context.
 """
         
         # Call OpenAI API
@@ -199,11 +215,11 @@ Please provide the analysis in this exact tabular format.
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a financial data extraction specialist. Your task is to extract investment portfolio data and present it in structured tabular format. Always respond with clear, organized tables showing asset names and their associated details."},
+                {"role": "system", "content": "You are a senior financial analyst with expertise in portfolio management and risk analysis. Your task is to extract comprehensive investment portfolio data and present it in professional, structured tabular format. Analyze the entire document context to provide thorough insights."},
                 {"role": "user", "content": full_prompt}
             ],
-            max_tokens=2000,
-            temperature=0.3
+            max_tokens=4000,  # Increased for comprehensive analysis
+            temperature=0.2    # More focused and consistent
         )
         
         # Get the AI response from the correct structure
