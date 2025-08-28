@@ -203,7 +203,7 @@ class AssetDataPrivacyApp {
             return;
         }
 
-        const prompt = document.getElementById('openaiPrompt').value || 'Extract all investment portfolio data and present it in a structured table format with asset names in the first column and all available details in subsequent columns.';
+        const prompt = document.getElementById('openaiPrompt').value || 'Extract asset-level data for all investments including: Name, Invested Capital, Current Cost, Fair Market Value, Date of Investment, Gross/Net IRR, Gross/Net MOIC, EBITDA, Net/Total Debt, Location (City/State/Country/Continent), Business Description, and GICS Sector. Present in a single table with assets as rows.';
         const openaiBtn = document.getElementById('openaiBtn');
         
         try {
