@@ -168,46 +168,50 @@ def openai_process():
         full_prompt = f"""
 {prompt}
 
-**COMPREHENSIVE FINANCIAL DOCUMENT ANALYSIS:**
+**ASSET-LEVEL DATA EXTRACTION:**
 
 Document Content:
 {masked_text}
 
-**ANALYSIS REQUIREMENTS:**
-1. **Portfolio Overview**: Extract comprehensive asset allocation and fund composition
-2. **Performance Analysis**: Identify all performance metrics, returns, and benchmarks  
-3. **Risk Assessment**: Analyze risk measures, volatility, and correlation data
-4. **Strategic Insights**: Provide actionable insights based on the full document context
-5. **Data Completeness**: Ensure no significant information is overlooked
+**REQUIRED ASSET DATA FIELDS:**
+Extract the following information for each asset mentioned in the document:
+
+1. **Name** - Asset/Company name
+2. **Invested Capital** - Initial investment amount
+3. **Current Cost** - Current cost basis
+4. **Fair Market Value** - Current fair market value
+5. **Date of Investment** - When the investment was made
+6. **Gross IRR** - Gross internal rate of return
+7. **Net IRR** - Net internal rate of return
+8. **Gross MOIC** - Gross multiple on invested capital
+9. **Net MOIC** - Net multiple on invested capital
+10. **EBITDA** - Earnings before interest, taxes, depreciation, and amortization
+11. **Net Debt** - Net debt amount
+12. **Total Debt** - Total debt amount
+13. **City** - City location
+14. **State** - State/Province location
+15. **Country** - Country location
+16. **Continent** - Continent location
+17. **Business Description** - Description of the business
+18. **GICS Sector** - GICS sector classification with description
 
 **REQUIRED OUTPUT FORMAT:**
 
-**1. EXECUTIVE SUMMARY TABLE:**
-| Metric | Value | Details |
-|--------|-------|---------|
-| Total Portfolio Value | [Value] | [Context] |
-| Number of Assets | [Count] | [Breakdown] |
-| Risk Profile | [Level] | [Justification] |
-
-**2. ASSET ALLOCATION TABLE:**
-| Asset/Fund Name | Allocation % | Current Value | Performance | Risk Level | Key Details |
-|-----------------|--------------|---------------|-------------|------------|-------------|
-| [Asset1] | [%] | [$] | [%] | [Level] | [Details] |
-| [Asset2] | [%] | [$] | [%] | [Level] | [Details] |
-
-**3. PERFORMANCE ANALYSIS:**
-| Time Period | Portfolio Return | Benchmark | Outperformance | Key Drivers |
-|-------------|------------------|-----------|----------------|-------------|
-| [Period] | [%] | [%] | [%] | [Factors] |
+**ASSET DATA TABLE:**
+| Name | Invested Capital | Current Cost | Fair Market Value | Date of Investment | Gross IRR | Net IRR | Gross MOIC | Net MOIC | EBITDA | Net Debt | Total Debt | City | State | Country | Continent | Business Description | GICS Sector |
+|------|------------------|--------------|-------------------|-------------------|-----------|---------|-------------|----------|--------|----------|------------|------|-------|---------|-----------|---------------------|-------------|
+| [Asset1] | [$] | [$] | [$] | [Date] | [%] | [%] | [x] | [x] | [$] | [$] | [$] | [City] | [State] | [Country] | [Continent] | [Description] | [Sector] |
+| [Asset2] | [$] | [$] | [$] | [Date] | [%] | [%] | [x] | [x] | [$] | [$] | [$] | [City] | [State] | [Country] | [Continent] | [Description] | [Sector] |
 
 **IMPORTANT INSTRUCTIONS:**
-- Use the ENTIRE document context for comprehensive analysis
-- Extract ALL numerical values, percentages, and financial metrics
-- Provide professional-grade insights suitable for senior management
-- Ensure data accuracy and completeness across all sections
-- Present findings in clear, actionable format
+- Extract ONLY the 18 specified data fields for each asset
+- Present data in a SINGLE table with assets as rows
+- Use "N/A" or leave blank for missing data
+- Focus on asset-level information only
+- No additional commentary or analysis needed
+- Ensure all assets mentioned in the document are included
 
-Please provide a thorough, professional analysis using the complete document context.
+Please provide ONLY the asset data table with the exact format specified above.
 """
         
         # Call OpenAI API
@@ -215,7 +219,7 @@ Please provide a thorough, professional analysis using the complete document con
         response = client.chat.completions.create(
             model="gpt-4o",  # Upgraded to GPT-4o for 30K TPM limit
             messages=[
-                {"role": "system", "content": "You are a senior financial analyst with expertise in portfolio management and risk analysis. Your task is to extract comprehensive investment portfolio data and present it in professional, structured tabular format. Analyze the entire document context to provide thorough insights."},
+                {"role": "system", "content": "You are a financial data extraction specialist. Your task is to extract specific asset-level data from financial documents and present it in a clean, single table format. Focus only on the 18 specified data fields for each asset. Provide no additional commentary or analysis - just the data table."},
                 {"role": "user", "content": full_prompt}
             ],
             max_tokens=4000,  # Increased for comprehensive analysis
